@@ -1,0 +1,39 @@
+{% extends "base.html" %}{% block title %}Civil Engineering Tools - SMARTGHAR AI{% endblock %}
+{% block content %}
+<section class="s"><div class="container"><div class="kicker">Civil engineering tools</div><h2>Quick calculators</h2>
+<p class="sub">Thumb-rule values for preliminary planning. Always have a structural engineer verify real designs.</p>
+<div class="grid" style="grid-template-columns:240px 1fr;margin-top:26px" id="toolwrap">
+  <div class="card" style="padding:10px"><div id="toollist"></div></div>
+  <div class="card"><h3 id="ttitle" style="margin-top:0"></h3><form id="tform" class="grid g2" style="gap:0 16px"></form>
+    <button class="btn gold" id="tcalc" style="margin-top:16px">Calculate</button><div id="tres"></div></div>
+</div></div></section>
+<style>@media(max-width:800px){ #toolwrap{grid-template-columns:1fr!important} #toollist{display:flex;flex-wrap:wrap;gap:6px}} #toollist button{display:block;width:100%;text-align:left;padding:10px 12px;border:0;background:none;border-radius:9px;cursor:pointer;font:inherit;font-size:14px} #toollist button.on{background:var(--char);color:#fff}</style>
+{% endblock %}
+{% block scripts %}<script>
+const N=(k,l,d)=>({k,l,d}), S=(k,l,opts,d)=>({k,l,opts,d});
+const TOOLS={
+ area:{t:'Area Calculator',f:[S('shape','Shape',['rectangle','triangle','circle','trapezium','triangle_sss'],'rectangle'),N('a','A (length / base / radius / side a, ft)',20),N('b','B (width / height / side b, ft)',15),N('c','C (trapezium 3rd side / side c, ft)',0)]},
+ volume:{t:'Volume Calculator',f:[S('shape','Shape',['box','cylinder','cone','sphere'],'box'),N('a','A (length / radius, ft)',10),N('b','B (width / height, ft)',10),N('c','C (height, ft)',10)]},
+ concrete:{t:'Concrete Calculator',f:[N('length','Length (ft)',20),N('width','Width (ft)',15),N('thickness_in','Thickness (in)',5),S('mix','Mix',['M5','M7.5','M10','M15','M20','M25'],'M20')]},
+ cement:{t:'Cement Calculator',f:[S('work','Work',['brickwork','plaster'],'brickwork'),N('quantity','Masonry volume (cft or m3)',100),S('unit','Volume unit',['cft','m3'],'cft'),N('area_sqft','Plaster area (sq ft)',500),N('thickness_mm','Plaster thickness (mm)',12),N('ratio','Sand ratio (1:n)',6)]},
+ brick:{t:'Brick Calculator',f:[N('length','Wall length (ft)',30),N('height','Wall height (ft)',10),N('thickness_in','Wall thickness (in)',9),N('openings_sqft','Openings (sq ft)',20)]},
+ steel:{t:'Steel Calculator',f:[S('kind','Type',['slab','bar'],'slab'),N('length','Slab length (ft)',20),N('width','Slab width (ft)',15),N('thickness_in','Thickness (in)',5),N('dia_mm','Bar dia (mm)',10),N('spacing_in','Spacing (in)',6),N('length_ft','Bar length (ft, bar type)',10),N('count','Bar count (bar type)',1)]},
+ paint:{t:'Paint Calculator',f:[N('wall_area','Wall area (sq ft)',1200),N('ceiling_area','Ceiling area (sq ft)',400),N('openings_sqft','Openings (sq ft)',100),N('coats','Coats',2),N('coverage','Coverage (sq ft / litre)',110)]},
+ tile:{t:'Tile Calculator',f:[N('length','Floor length (ft)',15),N('width','Floor width (ft)',12),N('tile_len_in','Tile length (in)',24),N('tile_wid_in','Tile width (in)',24),N('wastage_pct','Wastage %',8)]},
+ staircase:{t:'Staircase Calculator',f:[N('floor_height_ft','Floor height (ft)',10),N('riser_in','Riser (in)',6.5),N('tread_in','Tread (in)',10),N('width_ft','Width (ft)',3.5)]},
+ foundation:{t:'Foundation Calculator',f:[N('column_load_kn','Column load (kN)',400),N('sbc_kn_m2','Safe bearing capacity (kN/m2)',150),N('column_size_mm','Column size (mm)',230)]},
+ beam_column:{t:'Beam & Column Calculator',f:[N('span_ft','Beam span (ft)',12),N('column_load_kn','Column load (kN)',400),N('fck','fck (MPa)',20),N('fy','fy (MPa)',415)]}
+};
+let cur='area';
+const list=document.getElementById('toollist');
+Object.entries(TOOLS).forEach(([k,v])=>{const b=document.createElement('button');b.textContent=v.t;b.onclick=()=>pick(k);b.dataset.k=k;list.appendChild(b)});
+function pick(k){cur=k;list.querySelectorAll('button').forEach(b=>b.classList.toggle('on',b.dataset.k===k));
+ document.getElementById('ttitle').textContent=TOOLS[k].t;document.getElementById('tres').innerHTML='';
+ document.getElementById('tform').innerHTML=TOOLS[k].f.map(f=>`<div><label>${f.l}</label>`+(f.opts?`<select name="${f.k}">${f.opts.map(o=>`<option ${o===f.d?'selected':''}>${o}</option>`).join('')}</select>`:`<input name="${f.k}" type="number" step="any" value="${f.d}">`)+'</div>').join('')}
+document.getElementById('tcalc').onclick=async()=>{
+ const data={};new FormData(document.getElementById('tform')).forEach((v,k)=>data[k]=isNaN(v)||v===''?v:parseFloat(v));
+ const r=await fetch('/api/tools/'+cur,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)});const j=await r.json();const out=document.getElementById('tres');
+ if(!r.ok){out.innerHTML=`<div class="flash error">${j.error}</div>`;return}
+ out.innerHTML='<div class="res">'+Object.entries(j.results).map(([a,b])=>`<div><span>${a}</span><b>${b}</b></div>`).join('')+'</div>'+(j.notes||[]).map(n=>`<p class="sub" style="font-size:12.5px">${n}</p>`).join('')};
+pick('area');
+</script>{% endblock %}

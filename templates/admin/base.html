@@ -1,0 +1,4 @@
+{% extends "base.html" %}{% block title %}Admin - SMARTGHAR AI{% endblock %}
+{% block content %}<div class="container" style="padding:30px 20px"><h2 class="serif">Admin panel</h2>
+<div class="tabs">{% for ep,l in [('admin.index','Analytics'),('admin.users','Users'),('admin.projects','Projects'),('admin.templates','Templates'),('admin.prices','Material prices'),('admin.subscriptions','Subscriptions'),('admin.content','Website content')] %}<a href="{{ url_for(ep) }}" class="btn sm {{ '' if request.endpoint==ep else 'ghost' }}">{{ l }}</a>{% endfor %}</div>
+{% block admin %}{% endblock %}</div>{% endblock %}

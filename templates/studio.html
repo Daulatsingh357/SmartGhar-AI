@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Design Studio - SMARTGHAR AI{% endblock %}
+{% block bodyclass %}studio{% endblock %}
+{% block head %}<link rel="stylesheet" href="{{ url_for('static', filename='css/studio.css') }}">{% endblock %}
+{% block footer %}{% endblock %}
+{% block content %}
+<div id="studio">
+  <aside id="left">
+    <div class="ptabs"><button data-p="plot" class="on">Plot</button><button data-p="rooms">Rooms</button><button data-p="vastu">Vastu</button></div>
+    <div id="p-plot" class="pane on">
+      <label>Project name</label><input id="in-name" value="My Dream Home">
+      <div class="two"><div><label>Plot length (ft)</label><input id="in-length" type="number" min="12" max="400" step="0.5" value="30"></div>
+      <div><label>Plot width (ft)</label><input id="in-width" type="number" min="12" max="400" step="0.5" value="40"></div></div>
+      <label>Total area (sq ft) <small>- or enter only this</small></label><input id="in-area" type="number" min="150" step="1" placeholder="auto">
+      <div class="two"><div><label>Plot shape</label><select id="in-shape"><option value="rectangle">Rectangle</option><option value="trapezium">Trapezium</option><option value="lshape">L-shape</option><option value="custom">Custom polygon</option></select></div>
+      <div><label>Usage</label><select id="in-usage"><option value="residential">Residential</option><option value="commercial">Commercial</option></select></div></div>
+      <div id="shape-extra"></div>
+      <div class="two"><div><label>Road facing</label><select id="in-road"><option value="N">North</option><option value="E" selected>East</option><option value="S">South</option><option value="W">West</option></select></div>
+      <div><label>North direction</label><select id="in-north"><option value="up">Up (standard)</option><option value="down">Down</option><option value="left">Left</option><option value="right">Right</option></select></div></div>
+      <div class="two"><div><label>City / location</label><input id="in-city" list="cities" value="Jaipur"><datalist id="cities"></datalist></div>
+      <div><label>Budget (INR)</label><input id="in-budget" type="number" step="50000" value="3500000"></div></div>
+      <div class="two"><div><label>Floors above ground</label><select id="in-floors"><option value="1">Ground only</option><option value="2" selected>G + 1</option><option value="3">G + 2</option><option value="4">G + 3</option></select></div>
+      <div><label>Extras</label><label class="chk"><input type="checkbox" id="in-basement"> Basement</label><label class="chk"><input type="checkbox" id="in-terrace" checked> Terrace</label></div></div>
+      <details><summary>Setbacks (optional override, ft)</summary><div class="two three"><div><label>Front</label><input id="sb-front" type="number" step="0.5" placeholder="auto"></div><div><label>Rear</label><input id="sb-rear" type="number" step="0.5" placeholder="auto"></div><div><label>Side</label><input id="sb-side" type="number" step="0.5" placeholder="auto"></div></div></details>
+      <div id="plotcalc" class="res"></div>
+    </div>
+    <div id="p-rooms" class="pane"><p class="hint">Choose rooms and counts. Optionally set your own size (ft) - leave blank for smart defaults.</p><div id="roomlist"></div></div>
+    <div id="p-vastu" class="pane">
+      <label>Design approach</label>
+      <div class="seg" id="vmode"><button data-v="strict">Strict Vastu</button><button data-v="flexible" class="on">Flexible Vastu</button><button data-v="normal">Normal architecture</button></div>
+      <p class="hint">Strict places every room in its ideal zone where space allows. Flexible balances Vastu with usability. Normal ignores Vastu while scoring it for reference.</p>
+      <div id="vastu-live"></div>
+    </div>
+    <div class="gen"><button class="btn gold" id="btn-gen" style="width:100%;justify-content:center">&#10024; Generate 3 designs</button><div id="gen-msg"></div></div>
+  </aside>
+
+  <main id="center">
+    <div class="topbar">
+      <div class="seg" id="views"><button data-v="2d" class="on">2D Naksha</button><button data-v="3d">3D Model</button><button data-v="draw">Drawings</button><button data-v="cost">Cost</button><button data-v="report">Report</button></div>
+      <div class="seg" id="opts"></div>
+      <div class="spacer"></div>
+      <button class="btn sm ghost" id="btn-save">&#128190; Save</button>
+      <div class="menu"><button class="btn sm" id="btn-exp">Export &#9662;</button>
+        <div class="menu-body" id="exp-menu">
+          <button data-e="pdf_plan">Naksha PDF (all drawings)</button><button data-e="pdf_estimate">Estimate PDF</button>
+          <button data-e="png">Current drawing PNG</button><button data-e="svg">Current drawing SVG</button>
+          <button data-e="shot">3D screenshot</button><button data-e="print">Print drawing</button></div></div>
+    </div>
+    <div class="subbar" id="subbar"></div>
+    <div id="stage">
+      <section id="v-2d" class="view on"><div id="canvas2d"></div>
+        <div class="tools2d"><button id="z-in" title="Zoom in">+</button><button id="z-out" title="Zoom out">&minus;</button><button id="z-fit" title="Fit">&#9635;</button>
+        <span class="sep"></span><button id="u-undo" title="Undo (Ctrl+Z)">&#8630;</button><button id="u-redo" title="Redo (Ctrl+Y)">&#8631;</button></div>
+        <div class="legend2d" id="layers2d"></div></section>
+      <section id="v-3d" class="view"><div id="canvas3d"></div><div class="tools3d" id="tools3d"></div></section>
+      <section id="v-draw" class="view"><div class="drawwrap"><div id="drawlist"></div><div id="drawsvg"></div></div></section>
+      <section id="v-cost" class="view scroll"><div id="cost"></div></section>
+      <section id="v-report" class="view scroll"><div id="report"></div></section>
+      <div id="empty">Enter your plot details and press <b>Generate 3 designs</b>.</div>
+    </div>
+  </main>
+
+  <aside id="right"><div id="props"></div></aside>
+</div>
+<div id="toast"></div>
+{% endblock %}
+{% block scripts %}
+<script>window.SG={pid:{{ project.id if project else 'null' }},preset:{{ preset|tojson if preset else 'null' }},disclaimer:{{ disclaimer|tojson }}};</script>
+<script src="{{ url_for('static', filename='vendor/three.min.js') }}"></script>
+<script src="{{ url_for('static', filename='vendor/OrbitControls.js') }}"></script>
+<script src="{{ url_for('static', filename='js/common.js') }}"></script>
+<script src="{{ url_for('static', filename='js/plan2d.js') }}"></script>
+<script src="{{ url_for('static', filename='js/editor2d.js') }}"></script>
+<script src="{{ url_for('static', filename='js/drawings.js') }}"></script>
+<script src="{{ url_for('static', filename='js/viewer3d.js') }}"></script>
+<script src="{{ url_for('static', filename='js/studio.js') }}"></script>
+<script src="{{ url_for('static', filename='js/panels.js') }}"></script>
+{% endblock %}

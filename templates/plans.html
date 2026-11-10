@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block title %}House Plans - SMARTGHAR AI{% endblock %}
+{% block content %}<section class="s"><div class="container"><div class="kicker">Library</div><h2>Explore house plans</h2><p class="sub">Open any design in the studio, adjust the inputs and generate your own variations.</p>
+<div class="grid g3" style="margin-top:26px">{% for t in templates %}<div class="card"><div class="tpl-thumb">{{ t.inputs_json|thumb }}</div><h3 style="margin:0 0 6px">{{ t.title }}</h3>
+{% set i = t.inputs_json|fromjson %}<p><span class="tag">{{ i.get('length','') }}{% if i.get('length') %}x{{ i.get('width') }} ft{% else %}{{ i.get('area') }} sq ft{% endif %}</span> <span class="tag">{{ i.get('road','N') }} road</span> <span class="tag">{{ i.get('floors',1) }} floor(s)</span></p>
+<p class="sub" style="font-size:14px">{{ t.description }}</p><a class="btn sm gold" href="{{ url_for('pages.studio_new', template=t.id) }}">Customise in studio</a></div>{% else %}<p>No templates yet - run <code>python seed.py</code>.</p>{% endfor %}</div></div></section>{% endblock %}

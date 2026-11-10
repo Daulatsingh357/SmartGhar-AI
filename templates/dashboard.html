@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block title %}Dashboard - SMARTGHAR AI{% endblock %}
+{% block content %}<div class="container" style="padding:36px 20px">
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px"><div><h2 class="serif" style="margin:0">Hello, {{ current_user.name.split()[0] }}</h2><span class="tag">{{ current_user.plan }} plan</span> <a href="{{ url_for('auth.profile') }}" style="font-size:13px">Edit profile</a></div>
+<a class="btn gold" href="{{ url_for('pages.studio_new') }}">+ Create new house project</a></div>
+<div class="grid g4" style="margin:24px 0"><div class="card"><div class="stat">{{ projects|length }}</div>Saved projects{% if limit < 1000 %} <small>(limit {{ limit }})</small>{% endif %}</div>
+<div class="card"><div class="stat">{{ downloads|length }}</div>Recent downloads</div><div class="card"><div class="stat">{{ projects[:1]|map(attribute='updated_at')|map('string')|first|default('-')|truncate(10,True,'') }}</div>Last activity</div><div class="card"><div class="stat">{{ current_user.city or '-' }}</div>City</div></div>
+<h3>Saved projects</h3><div class="grid g3">{% for p in projects %}{% set inp = p.inputs_json|fromjson %}
+<div class="card"><div class="tpl-thumb">{{ p.inputs_json|thumb }}</div><h3 style="margin:0">{{ p.name }}</h3><p class="sub" style="font-size:13px">Updated {{ p.updated_at.strftime('%d %b %Y %H:%M') }}</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap"><a class="btn sm gold" href="{{ url_for('pages.studio', pid=p.id) }}">Open</a><button class="btn sm ghost" onclick="act('dup',{{ p.id }})">Duplicate</button><button class="btn sm danger" onclick="act('del',{{ p.id }})">Delete</button></div></div>
+{% else %}<div class="card" style="grid-column:1/-1">No projects yet. <a href="{{ url_for('pages.studio_new') }}">Create your first design</a>.</div>{% endfor %}</div>
+<div class="grid g2" style="margin-top:34px"><div class="card"><h3>Recent designs</h3>{% for p in projects[:5] %}<div style="padding:7px 0;border-bottom:1px solid var(--line)"><a href="{{ url_for('pages.studio', pid=p.id) }}">{{ p.name }}</a> <small style="color:var(--mute)">{{ p.updated_at.strftime('%d %b') }}</small></div>{% else %}<p class="sub">Nothing yet.</p>{% endfor %}</div>
+<div class="card"><h3>Downloaded plans &amp; history</h3><table class="t"><tr><th>Project</th><th>Type</th><th>When</th></tr>{% for d in downloads %}<tr><td>{{ names.get(d.project_id,'(deleted)') }}</td><td><span class="tag">{{ d.kind }}</span></td><td>{{ d.created_at.strftime('%d %b %H:%M') }}</td></tr>{% else %}<tr><td colspan="3" class="sub">No downloads yet.</td></tr>{% endfor %}</table></div></div></div>
+{% endblock %}
+{% block scripts %}<script>
+async function act(a,id){if(a==='del'&&!confirm('Delete this project permanently?'))return;
+ const r=await fetch(a==='del'?'/api/projects/'+id:'/api/projects/'+id+'/duplicate',{method:a==='del'?'DELETE':'POST'});
+ if(r.ok)location.reload();else alert((await r.json()).error||'Failed');}
+</script>{% endblock %}

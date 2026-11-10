@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block title %}Register - SMARTGHAR AI{% endblock %}
+{% block content %}<div class="auth card"><h2 class="serif">Create your account</h2>
+<form method="post">
+<label>Full name</label><input name="name" required value="{{ form.get('name','') }}">
+<label>Email</label><input type="email" name="email" required value="{{ form.get('email','') }}">
+<div class="grid g2" style="gap:12px"><div><label>Phone</label><input name="phone" value="{{ form.get('phone','') }}"></div><div><label>City</label><input name="city" value="{{ form.get('city','') }}"></div></div>
+<label>Password (8+ chars, letters &amp; numbers)</label><input type="password" name="password" required minlength="8">
+<label>Confirm password</label><input type="password" name="password2" required>
+<button class="btn gold" style="width:100%;margin-top:16px;justify-content:center">Register</button></form>
+<p style="font-size:14px">Already registered? <a href="{{ url_for('auth.login') }}">Login</a></p></div>{% endblock %}

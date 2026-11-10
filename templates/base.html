@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}SMARTGHAR AI - AI House Planning &amp; 3D Architecture Studio{% endblock %}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+{% block head %}{% endblock %}
+</head>
+<body class="{% block bodyclass %}{% endblock %}">
+{% block nav %}
+<header class="nav"><div class="container in">
+  <a class="logo" href="{{ url_for('pages.home') }}">SMART<b>GHAR</b> AI</a>
+  <button class="burger" aria-label="Menu" onclick="document.getElementById('nl').classList.toggle('open')">&#9776;</button>
+  <nav class="nav-links" id="nl">
+    <a href="{{ url_for('pages.house_plans') }}">House Plans</a>
+    <a href="{{ url_for('pages.tools') }}">Civil Tools</a>
+    <a href="{{ url_for('pages.pricing') }}">Pricing</a>
+    <a href="{{ url_for('pages.about') }}">About</a>
+    <a href="{{ url_for('pages.contact') }}">Contact</a>
+    {% if current_user.is_authenticated %}
+      <a href="{{ url_for('pages.dashboard') }}">Dashboard</a>
+      {% if current_user.is_admin %}<a href="{{ url_for('admin.index') }}">Admin</a>{% endif %}
+      <a href="{{ url_for('auth.logout') }}">Logout</a>
+    {% else %}
+      <a href="{{ url_for('auth.login') }}">Login</a>
+    {% endif %}
+    <a class="btn gold sm" href="{{ url_for('pages.studio_new') }}">Start Designing</a>
+  </nav>
+</div></header>
+{% endblock %}
+{% with msgs = get_flashed_messages(with_categories=true) %}{% if msgs %}<div class="container">{% for c, m in msgs %}<div class="flash {{ c }}">{{ m }}</div>{% endfor %}</div>{% endif %}{% endwith %}
+{% block content %}{% endblock %}
+{% block footer %}
+<footer><div class="container">
+  <div class="grid g3">
+    <div><div class="logo" style="color:#fff">SMART<b>GHAR</b> AI</div><p>{{ site.about[:140] }}...</p></div>
+    <div><h4>Explore</h4><a href="{{ url_for('pages.house_plans') }}">House Plans</a><br><a href="{{ url_for('pages.tools') }}">Civil Engineering Tools</a><br><a href="{{ url_for('pages.pricing') }}">Pricing</a></div>
+    <div><h4>Contact</h4>{{ site.contact_email }}<br>{{ site.contact_phone }}<br>{{ site.contact_address }}</div>
+  </div>
+  <div class="disc">{{ disclaimer }}</div>
+</div></footer>
+{% endblock %}
+<script>
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.15});
+document.querySelectorAll('.fade').forEach(el=>io.observe(el));
+</script>
+{% block scripts %}{% endblock %}
+</body></html>

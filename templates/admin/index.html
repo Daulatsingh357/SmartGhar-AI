@@ -1,0 +1,9 @@
+{% extends "admin/base.html" %}{% block admin %}
+<div class="grid g4">{% for k,v in stats.items() %}<div class="card"><div class="stat">{{ v }}</div>{{ k|title }}</div>{% endfor %}</div>
+<div class="grid g2" style="margin-top:20px"><div class="card"><h3>Signups &amp; projects (14 days)</h3><svg id="ch" viewBox="0 0 520 200" style="width:100%"></svg></div>
+<div class="card"><h3>Plans</h3>{% for k,v in plans.items() %}<div class="res"><div><span>{{ k|title }}</span><b>{{ v }}</b></div></div>{% endfor %}<h3>Exports</h3>{% for k,v in kinds.items() %}<div class="res"><div><span>{{ k }}</span><b>{{ v }}</b></div></div>{% else %}<p class="sub">No exports yet.</p>{% endfor %}</div></div>
+<script>
+const L={{ labels|tojson }},A={{ s_users|tojson }},B={{ s_projects|tojson }},mx=Math.max(1,...A,...B),sv=document.getElementById('ch');
+const pts=(a,c)=>`<polyline fill="none" stroke="${c}" stroke-width="2.5" points="${a.map((v,i)=>`${30+i*(480/13)},${170-v/mx*150}`).join(' ')}"/>`;
+sv.innerHTML=pts(A,'#b8923a')+pts(B,'#25282d')+L.map((l,i)=>i%3==0?`<text x="${30+i*(480/13)}" y="192" font-size="10" fill="#888" text-anchor="middle">${l}</text>`:'').join('')+`<text x="30" y="14" font-size="11" fill="#b8923a">Users</text><text x="80" y="14" font-size="11" fill="#25282d">Projects</text>`;
+</script>{% endblock %}

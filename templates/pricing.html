@@ -1,0 +1,9 @@
+{% extends "base.html" %}{% block title %}Pricing - SMARTGHAR AI{% endblock %}
+{% block content %}<section class="s"><div class="container" style="text-align:center"><div class="kicker">Pricing</div><h2>Simple plans for every builder</h2>
+<div class="grid g3" style="margin-top:36px;text-align:left">{% for p in plans %}
+<div class="card price {{ 'hl' if p.highlight }}">{% if p.highlight %}<span class="tag" style="position:absolute;top:-12px;right:20px">Most popular</span>{% endif %}
+<h3>{{ p.name }}</h3><div class="amt">{{ p.price }}<small style="font-size:14px;color:var(--mute)">{{ p.period }}</small></div>
+<ul>{% for f in p.features %}<li>{{ f }}</li>{% endfor %}</ul>
+{% if current_user.is_authenticated %}<form method="post" action="{{ url_for('pages.subscribe', plan=p.key) }}"><button class="btn {{ 'gold' if p.highlight }}" style="width:100%;justify-content:center">{{ 'Current plan' if current_user.plan==p.key else 'Choose ' + p.name }}</button></form>
+{% else %}<a class="btn {{ 'gold' if p.highlight }}" style="width:100%;justify-content:center" href="{{ url_for('auth.register') }}">Get started</a>{% endif %}</div>{% endfor %}</div>
+<p class="sub" style="margin:26px auto 0">Billing is a demo: choosing a plan switches your account without taking payment.</p></div></section>{% endblock %}

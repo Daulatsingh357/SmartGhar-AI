@@ -1,0 +1,6 @@
+{% extends "admin/base.html" %}{% block admin %}
+<div class="grid g2"><div class="card"><h3>Add template</h3><form method="post"><label>Title</label><input name="title" required><label>Description</label><textarea name="description" rows="2"></textarea>
+<label>Inputs (JSON, same as studio inputs)</label><textarea name="inputs_json" rows="6" required>{"length":30,"width":40,"road":"E","floors":2,"vastu_mode":"flexible","city":"Jaipur","rooms":[{"type":"living","count":1},{"type":"master","count":1},{"type":"kitchen","count":1},{"type":"bathroom","count":2}]}</textarea>
+<label style="font-weight:400"><input type="checkbox" name="featured" checked style="width:auto"> Featured on homepage</label><button class="btn gold" style="margin-top:12px">Save template</button></form></div>
+<div class="card"><h3>Existing</h3>{% for t in templates %}<div style="padding:8px 0;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:8px"><div><b>{{ t.title }}</b>{% if t.featured %} <span class="tag">featured</span>{% endif %}<br><small class="sub">{{ t.description }}</small></div>
+<form method="post"><input type="hidden" name="action" value="delete"><input type="hidden" name="id" value="{{ t.id }}"><button class="btn sm danger">Delete</button></form></div>{% endfor %}</div></div>{% endblock %}

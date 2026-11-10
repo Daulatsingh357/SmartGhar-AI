@@ -1,0 +1,11 @@
+{% extends "base.html" %}{% block title %}Profile - SMARTGHAR AI{% endblock %}
+{% block content %}<div class="container" style="padding:40px 20px"><h2 class="serif">Profile</h2>
+<div class="grid g2">
+<div class="card"><h3>Details</h3><form method="post"><input type="hidden" name="action" value="profile">
+<label>Name</label><input name="name" value="{{ current_user.name }}" required>
+<label>Email</label><input value="{{ current_user.email }}" disabled>
+<label>Phone</label><input name="phone" value="{{ current_user.phone }}"><label>City</label><input name="city" value="{{ current_user.city }}">
+<p>Plan: <span class="tag">{{ current_user.plan }}</span></p><button class="btn gold">Save profile</button></form></div>
+<div class="card"><h3>Change password</h3><form method="post"><input type="hidden" name="action" value="password">
+<label>Current password</label><input type="password" name="current" required><label>New password</label><input type="password" name="new" required minlength="8"><label>Confirm</label><input type="password" name="new2" required>
+<button class="btn">Update password</button></form></div></div></div>{% endblock %}

@@ -1,0 +1,18 @@
+SAMPLES = {
+ "30x40_east_2bhk_g1": dict(length=30, width=40, road='E', north_pos='up', floors=2, vastu_mode='strict', city='Jaipur',
+    basement=False, terrace=True, budget=3500000,
+    rooms=[dict(type='living',count=1),dict(type='master',count=1),dict(type='kids',count=1),dict(type='guest',count=1),
+           dict(type='kitchen',count=1),dict(type='dining',count=1),dict(type='bathroom',count=3),dict(type='toilet',count=1),
+           dict(type='pooja',count=1),dict(type='balcony',count=1),dict(type='parking',count=1),dict(type='garden',count=1),
+           dict(type='staircase',count=1),dict(type='store',count=1)]),
+ "20x50_north_1floor": dict(length=20, width=50, road='N', floors=1, vastu_mode='flexible', city='Delhi',
+    rooms=[dict(type='living',count=1),dict(type='master',count=1),dict(type='kids',count=1),dict(type='kitchen',count=1),
+           dict(type='dining',count=1),dict(type='bathroom',count=2),dict(type='pooja',count=1),dict(type='parking',count=1)]),
+ "40x60_south_3floors": dict(length=40, width=60, road='S', floors=3, vastu_mode='normal', city='Mumbai', basement=True,
+    rooms=[dict(type='living',count=1),dict(type='master',count=1),dict(type='kids',count=2),dict(type='guest',count=1),
+           dict(type='kitchen',count=1),dict(type='dining',count=1),dict(type='bathroom',count=4),dict(type='toilet',count=2),
+           dict(type='pooja',count=1),dict(type='balcony',count=2),dict(type='parking',count=2),dict(type='garden',count=1),
+           dict(type='staircase',count=1),dict(type='store',count=1),dict(type='utility',count=1)]),
+ "area_only_1200_west": dict(area=1200, road='W', floors=1, rooms=[dict(type='living',count=1),dict(type='master',count=1),
+           dict(type='kitchen',count=1),dict(type='bathroom',count=1)]),
+}

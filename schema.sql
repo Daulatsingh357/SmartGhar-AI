@@ -1,0 +1,83 @@
+-- SMARTGHAR AI MySQL schema (tables are also auto-created by SQLAlchemy via `python seed.py`)
+CREATE DATABASE IF NOT EXISTS smartghar CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE smartghar;
+
+CREATE TABLE users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(190) NOT NULL UNIQUE,
+  phone VARCHAR(30) DEFAULT '',
+  city VARCHAR(80) DEFAULT '',
+  password_hash VARCHAR(255) NOT NULL,
+  is_admin TINYINT(1) DEFAULT 0,
+  is_active_user TINYINT(1) DEFAULT 1,
+  plan VARCHAR(30) DEFAULT 'free',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE projects (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  name VARCHAR(150) NOT NULL,
+  inputs_json LONGTEXT NOT NULL,
+  plans_json LONGTEXT,
+  selected_option INT DEFAULT 0,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX (user_id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE download_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  project_id INT NOT NULL,
+  kind VARCHAR(30),
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+  FOREIGN KEY (project_id) REFERENCES projects(id) ON DELETE CASCADE
+);
+
+CREATE TABLE templates (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(150) NOT NULL,
+  description TEXT,
+  inputs_json LONGTEXT NOT NULL,
+  featured TINYINT(1) DEFAULT 1,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE material_prices (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  city VARCHAR(80) NOT NULL,
+  `key` VARCHAR(40) NOT NULL,
+  label VARCHAR(80) NOT NULL,
+  unit VARCHAR(20) NOT NULL,
+  price DOUBLE NOT NULL,
+  UNIQUE KEY uq_city_key (city, `key`),
+  INDEX (city)
+);
+
+CREATE TABLE site_content (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  `key` VARCHAR(60) NOT NULL UNIQUE,
+  value TEXT
+);
+
+CREATE TABLE subscriptions (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NOT NULL,
+  plan VARCHAR(30) NOT NULL,
+  status VARCHAR(20) DEFAULT 'active',
+  started_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+  ends_at DATETIME,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+);
+
+CREATE TABLE contact_messages (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(120) NOT NULL,
+  email VARCHAR(190) NOT NULL,
+  message TEXT NOT NULL,
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+);

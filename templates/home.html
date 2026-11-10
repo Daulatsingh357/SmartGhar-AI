@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="hero"><div class="blueprint"></div>
+<div class="container grid g2" style="align-items:center;position:relative">
+  <div>
+    <div class="kicker">AI-powered house planning</div>
+    <h1 class="serif">{{ site.hero_title }}</h1>
+    <p>{{ site.hero_sub }}</p>
+    <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:26px">
+      <a class="btn gold" href="{{ url_for('pages.studio_new') }}">Start Designing &rarr;</a>
+      <a class="btn ghost" style="color:#fff;border-color:#fff" href="{{ url_for('pages.house_plans') }}">Explore House Plans</a>
+    </div>
+    <div class="glass" style="display:flex;gap:26px;padding:16px 22px;margin-top:34px;max-width:520px">
+      <div><div class="stat" style="color:#fff">3</div><small>layouts per design</small></div>
+      <div><div class="stat" style="color:#fff">2D+3D</div><small>real geometry</small></div>
+      <div><div class="stat" style="color:#fff">Vastu</div><small>scored plans</small></div>
+    </div>
+  </div>
+  <svg class="hero-art draw" viewBox="0 0 400 300" fill="none" stroke="#d9b45a" stroke-width="2">
+    <rect x="40" y="30" width="320" height="240"/><line x1="40" y1="130" x2="200" y2="130"/><line x1="200" y1="30" x2="200" y2="200"/>
+    <line x1="200" y1="200" x2="360" y2="200"/><line x1="110" y1="130" x2="110" y2="270"/><path d="M200 90 A28 28 0 0 1 172 118"/>
+    <path d="M110 200 A22 22 0 0 0 132 222"/><line x1="120" y1="30" x2="150" y2="30" stroke="#fff"/><line x1="280" y1="270" x2="320" y2="270" stroke="#fff"/>
+  </svg>
+</div></section>
+
+<section class="s"><div class="container">
+  <div class="kicker">How it works</div><h2>From plot to plan in four steps</h2>
+  <div class="grid g4 feat" style="margin-top:28px">
+    <div class="card fade"><div class="ico">&#128207;</div><h3>1. Enter your plot</h3><p class="sub">Dimensions, road direction, shape, floors and city.</p></div>
+    <div class="card fade"><div class="ico">&#129517;</div><h3>2. Choose Vastu &amp; rooms</h3><p class="sub">Strict, flexible or normal; customise every room size.</p></div>
+    <div class="card fade"><div class="ico">&#128208;</div><h3>3. Get 3 layouts</h3><p class="sub">Dimension-accurate naksha with doors, windows and furniture.</p></div>
+    <div class="card fade"><div class="ico">&#127968;</div><h3>4. Walk through in 3D</h3><p class="sub">Edit, estimate cost and export PDF, PNG or SVG.</p></div>
+  </div>
+</div></section>
+
+<section class="s" style="background:#fff"><div class="container">
+  <div class="kicker">Featured designs</div><h2>Professional Indian house plans</h2>
+  <div class="grid g3" style="margin-top:28px">
+  {% for t in featured %}
+    <div class="card fade"><div class="tpl-thumb">{{ t.inputs_json|thumb }}</div><h3 style="margin:0 0 6px">{{ t.title }}</h3>
+    <p class="sub" style="font-size:14px">{{ t.description }}</p>
+    <a class="btn sm gold" href="{{ url_for('pages.studio_new', template=t.id) }}">Open in studio</a></div>
+  {% else %}<p class="sub">Run <code>python seed.py</code> to load sample designs.</p>{% endfor %}
+  </div>
+</div></section>
+
+<section class="s"><div class="container">
+  <div class="kicker">Everything included</div><h2>A full civil engineering toolkit</h2>
+  <div class="grid g3 feat" style="margin-top:28px">
+    {% for ico,t,d in [('&#128208;','2D Naksha editor','Drag rooms, resize, edit walls, doors and windows with undo / redo.'),('&#127959;','3D house designer','Exterior, interior, day/night, floor-by-floor visualisation.'),('&#129517;','AI Vastu scoring','Room-by-room zones with explanations and fixes.'),('&#128176;','Cost estimator','Cement, steel, bricks, labour and more with city rates.'),('&#129518;','11 calculators','Concrete, steel, staircase, foundation, beam &amp; column...'),('&#128196;','Drawings &amp; export','Elevations, section, electrical, plumbing, site and roof plan in PDF.')] %}
+    <div class="card fade"><div class="ico">{{ ico|safe }}</div><h3>{{ t|safe }}</h3><p class="sub">{{ d|safe }}</p></div>
+    {% endfor %}
+  </div>
+</div></section>
+<section class="s" style="background:var(--char);color:#fff;text-align:center"><div class="container"><h2 style="color:#fff">Ready to see your home?</h2><p style="color:#c9ccd2">Free to start - no credit card.</p><a class="btn gold" href="{{ url_for('pages.studio_new') }}">Start Designing</a></div></section>
+{% endblock %}
